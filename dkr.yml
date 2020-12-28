@@ -1,0 +1,44 @@
+- hosts: all
+  tasks:
+  - name: setting up docker yum conf
+    yum_repository: 
+      name: dockername
+      description: disc for docker 
+      baseurl: https://download.docker.com/linux/centos/7/x86_64/stable/
+      gpgcheck: no
+
+  - command: "yum install docker-ce --nobest -y"   
+  - pip:
+     name: docker-py 
+  - service:
+      name: docker
+      state: started    
+  - name: pull an image
+    community.general.docker_image:
+      name: centos:latest
+      source: pull
+  - name: create a data conrainer   
+    community.general.docker_container:
+      name: ans.dkr-web
+      image: centos:latest
+      state: present
+      restart: yes
+  - name: to install the httpd
+    package:
+      name: httpd    
+      state: present
+  - name: to copy the file     
+    copy:
+      content: this is the web-server launched by automation program
+      dest: /var/www/html/web.html
+  - name: start httpd service   
+    service:
+      state: started
+      name: httpd
+
+
+
+          
+
+
+
